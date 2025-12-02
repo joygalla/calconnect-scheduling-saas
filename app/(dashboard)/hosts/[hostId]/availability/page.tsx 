@@ -1,0 +1,61 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { getAvailability, updateAvailability } from "@/services/availabilityService";
+import Calendar from "@/components/Calendar";
+import TimeSlots from "@/components/TimeSlots";
+
+export default function HostAvailabilityPage({ params }: any) {
+  const { hostId } = params;
+
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [availability, setAvailability] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getAvailability(hostId);
+        setAvailability(data);
+      } catch (err) {
+        console.error("Error fetching availability:", err);
+      }
+      setLoading(false);
+    }
+
+    load();
+  }, [hostId]);
+
+  const handleTimeSelect = async (time: string) => {
+    if (!selectedDate) return;
+    try {
+      const updated = await updateAvailability(hostId, selectedDate, time);
+      setAvailability(updated);
+    } catch (err) {
+      console.error("Error updating availability:", err);
+    }
+  };
+
+  if (loading) return <div style={{ padding: "20px" }}>Loading availability…</div>;
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>Availability</h1>
+
+      <Calendar selected={selectedDate} onSelect={setSelectedDate} />
+
+      {selectedDate && (
+        <div style={{ marginTop: "25px" }}>
+          <h2 style={{ fontSize: "20px", marginBottom: "10px" }}>
+            Time Slots for {selectedDate}
+          </h2>
+          <TimeSlots
+            date={selectedDate}
+            availability={availability}
+            onSelect={handleTimeSelect}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
