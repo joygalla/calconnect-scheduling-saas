@@ -1,0 +1,21 @@
+# OS / editor junk
+.DS_Store
+node_modules
+dist
+.next
+out
+
+# Env + secrets
+.env
+.env.local
+.env.development
+.env.production
+*.env
+serviceAccount*.json
+firebase-service-account.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
